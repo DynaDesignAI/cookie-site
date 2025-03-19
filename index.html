@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookie Consent Banner</title>
+    <style>
+        /* Cookie Banner Styles */
+        #cookie-banner {
+            width: 100%;
+            background-color: #f0f0f0;
+            color: #333;
+            padding: 15px;
+            text-align: center;
+            z-index: 1000; /* Ensure it's on top */
+            box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        #cookie-banner button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            margin: 5px;
+            border-radius: 5px;
+        }
+
+        #cookie-banner a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        #cookie-banner a:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="cookie-banner">
+        <p>We use cookies to improve your experience, for analytics, and (occasionally) for purposes beneficial to our customers. By using our site, you agree to our use of cookies.  See our <a href="https://www.dynadesign.ai/privacy/cookiepolicy">Cookie Policy</a> for details.</p>
+        <button id="accept-cookies">Accept</button>
+        <button id="decline-cookies">Decline</button>
+        <!-- Alternatively, a "Manage Preferences" button could link to a more detailed settings page -->
+    </div>
+
+    <script>
+        // JavaScript for Cookie Banner
+        document.addEventListener('DOMContentLoaded', function() {
+            const cookieBanner = document.getElementById('cookie-banner');
+            const acceptButton = document.getElementById('accept-cookies');
+            const declineButton = document.getElementById('decline-cookies');
+
+            // Function to set a cookie
+            function setCookie(name, value, days) {
+                let expires = "";
+                if (days) {
+                    const date = new Date();
+                    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                    expires = "; expires=" + date.toUTCString();
+                }
+                document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+            }
+
+            // Function to get a cookie
+            function getCookie(name) {
+                const nameEQ = name + "=";
+                const ca = document.cookie.split(';');
+                for(let i = 0; i < ca.length; i++) {
+                    let c = ca[i];
+                    while (c.charAt(0) === ' ') {
+                        c = c.substring(1,c.length);
+                    }
+                    if (c.indexOf(nameEQ) === 0) {
+                        return c.substring(nameEQ.length,c.length);
+                    }
+                }
+                return null;
+            }
+
+            // Check if the user has already accepted cookies
+            if (getCookie('cookie_consent') !== 'accepted') {
+                cookieBanner.style.display = 'block'; // Show the banner
+            }
+
+            // Handle Accept button click
+            acceptButton.addEventListener('click', function() {
+                setCookie('cookie_consent', 'accepted', 365); // Set cookie to expire in 1 year
+                cookieBanner.style.display = 'none'; // Hide the banner
+                //Insert code here to activate the analytics cookies
+                 activateAnalytics();
+
+            });
+
+           // Handle Decline button click
+            declineButton.addEventListener('click', function() {
+                setCookie('cookie_consent', 'declined', 365); // Set cookie to expire in 1 year
+                cookieBanner.style.display = 'none'; // Hide the banner
+                deactivateAnalytics(); //Add this function
+            });
+
+            //activate analytics
+            function activateAnalytics()
+            {
+                //Here you will insert the analytics code for google for example
+
+                // Google Analytics (Example - Replace with your actual tracking code)
+                (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+                })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+                ga('create', 'G-PTCENDZ2K0', 'auto'); // Replace with your Tracking ID
+                ga('send', 'pageview');
+                console.log("Activated analytics!"); // Check on console
+
+            }
+
+            function deactivateAnalytics() {
+                // Disable Google Analytics  (This is basic. See warnings!)
+                window['ga-disable-G-PTCENDZ2K0'] = true;
+                console.log("Analytics disabled");
+            }
+
+            //postmessage to hide banner
+            const banner = document.getElementById('cookie-banner');
+            const hideIframe = () => {
+              window.parent.postMessage({ action: 'hideBanner' }, window.location.origin);
+            };
+            acceptButton.addEventListener('click',hideIframe);
+            declineButton.addEventListener('click',hideIframe);
+
+        });
+    </script>
+
+</body>
+</html>
